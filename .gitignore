@@ -1,0 +1,8 @@
+# Project files
+.idea
+atlassian-ide-plugin.xml
+nbproject
+.buildpath
+.project
+.settings
+/vendor
