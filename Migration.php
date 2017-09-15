@@ -43,6 +43,19 @@ class Migration
             }
         }
 
+        //Modules migrations
+        foreach (Yii::$app->modules as $name => $module) {
+            if (!array_key_exists('class', $module)) {
+                Yii::warning("Class for module {$name} not specified.", 'migrations');
+                continue;
+            }
+            $ref = new \ReflectionClass($module['class']);
+            $migPath = dirname($ref->getFileName()) . DIRECTORY_SEPARATOR . 'migrations';
+            if (is_dir($migPath)) {
+                $this->getNewMigrationsForPath($migPath);
+            }
+        }
+
         sort($this->_migrations);
 
         return $this->_migrations;
