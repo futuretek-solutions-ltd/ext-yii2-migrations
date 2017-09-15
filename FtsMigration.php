@@ -77,8 +77,8 @@ class FtsMigration extends YiiMigration
             'type' => $type,
             'context' => 'Option',
             'context_id' => null,
-            'created_at' => new Expression('NOW()'),
-            'updated_at' => new Expression('NOW()'),
+            'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
+            'updated_at' => (new \DateTime())->format('Y-m-d H:i:s'),
         ]);
     }
 
