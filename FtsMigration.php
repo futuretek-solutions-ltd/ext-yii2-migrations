@@ -2,7 +2,6 @@
 
 namespace futuretek\migrations;
 
-use yii\db\Expression;
 use yii\db\Migration as YiiMigration;
 
 /**
@@ -61,16 +60,14 @@ class FtsMigration extends YiiMigration
      * @param string $type Type - allowed only Option::TYPE_xxx constants
      * @param int $system Is system option (invisible to users)
      * @param string $unit Unit of measurement
-     * @param string $data Serialized data for drop-downs
      */
-    public function insertOption($name, $defaultValue, $title, $description, $type, $system = 0, $unit = null, $data = null)
+    public function insertOption($name, $defaultValue, $title, $description, $type, $system = 0, $unit = null)
     {
         $this->insert('option', [
             'name' => $name,
             'value' => $defaultValue,
             'title' => $title,
             'description' => $description,
-            'data' => $data,
             'default_value' => $defaultValue,
             'unit' => $unit,
             'system' => (int)$system,
@@ -81,5 +78,4 @@ class FtsMigration extends YiiMigration
             'updated_at' => (new \DateTime())->format('Y-m-d H:i:s'),
         ]);
     }
-
 }

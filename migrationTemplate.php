@@ -12,13 +12,6 @@
 
 echo '<?php';?>
 
-/**
- * File <?= $className ?>.php
- *
- * @author SomeBody <somebody@futuretek.cz>
- * @license Apache-2.0
- * @link http://www.futuretek.cz
- */
 class <?= $className ?> extends \futuretek\migrations\FtsMigration
 {
     /**
@@ -26,6 +19,7 @@ class <?= $className ?> extends \futuretek\migrations\FtsMigration
      */
     public function safeUp()
     {
+        //todo: implement migration
     }
 
     /**
@@ -33,5 +27,6 @@ class <?= $className ?> extends \futuretek\migrations\FtsMigration
      */
     public function safeDown()
     {
+        //todo: implement reverse migration
     }
 }
