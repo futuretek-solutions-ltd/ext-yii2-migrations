@@ -35,10 +35,13 @@ class Migration
         //Main app migrations
         $this->getNewMigrationsForPath(Yii::$app->basePath . DIRECTORY_SEPARATOR . 'migrations');
 
+        $pathsExplored = [];
+
         //Extensions migrations
         foreach (Yii::$app->extensions as $extension) {
             $migPath = Yii::$app->vendorPath . DIRECTORY_SEPARATOR . $extension['name'] . DIRECTORY_SEPARATOR . 'migrations';
             if (is_dir($migPath)) {
+                $pathsExplored[] = str_replace('\\', '/', $migPath);
                 $this->getNewMigrationsForPath($migPath);
             }
         }
@@ -51,7 +54,8 @@ class Migration
             }
             $ref = new \ReflectionClass($module['class']);
             $migPath = dirname($ref->getFileName()) . DIRECTORY_SEPARATOR . 'migrations';
-            if (is_dir($migPath)) {
+            if (is_dir($migPath) && !in_array(str_replace('\\', '/', $migPath), $pathsExplored, true)) {
+                $pathsExplored[] = str_replace('\\', '/', $migPath);
                 $this->getNewMigrationsForPath($migPath);
             }
         }
