@@ -45,7 +45,7 @@ class Migration
 
         //Modules migrations
         foreach (Yii::$app->modules as $name => $module) {
-            if (!array_key_exists('class', $module)) {
+            if (!is_array($module) || !array_key_exists('class', $module)) {
                 Yii::warning("Class for module {$name} not specified.", 'migrations');
                 continue;
             }
