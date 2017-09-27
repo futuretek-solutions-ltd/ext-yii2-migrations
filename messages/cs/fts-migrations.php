@@ -59,6 +59,9 @@ return array (
     'No migration has been done before.' => 'Nebyl nalezen žádný skript ke zvrácení.',
     'Successfully reverted {count, plural, one{# migration} other{# migrations}}.' => '{count, plural, one{Jeden skript byl úspěšně zvrácen} few{# skripty byly úspěšně zvrácny} other{# skriptů bylo úspěšně zvráceno}}.',
 
+    //FtsMigration
+    'Schema for table {tbl} not found.' => 'Struktura tabulky {tbl} nebyla nalezena.',
+
     //AdminController
     'This command is available only in development.' => 'Tento příkaz je dostupný pouze ve vývojovém prostředí.',
     'All tables was successfully dropped.' => 'Všechny tabulky byly úspěšně smazány.',

@@ -78,4 +78,21 @@ class FtsMigration extends YiiMigration
             'updated_at' => (new \DateTime())->format('Y-m-d H:i:s'),
         ]);
     }
+
+    /**
+     * Check if foreign key exists in specified table
+     *
+     * @param string $keyName FK name
+     * @param string $tableName Table name
+     * @return bool
+     */
+    public function foreignKeyExists($keyName, $tableName)
+    {
+        $tableSchema = $this->getDb()->getTableSchema($tableName);
+        if ($tableSchema === null) {
+            throw new \RuntimeException(\Yii::t('fts-migrations', 'Schema for table {tbl} not found.', ['tbl' => $tableName]));
+        }
+
+        return array_key_exists('fk_user_notification_target_user', $tableSchema->foreignKeys);
+    }
 }
