@@ -85,6 +85,7 @@ class FtsMigration extends YiiMigration
      * @param string $keyName FK name
      * @param string $tableName Table name
      * @return bool
+     * @throws \RuntimeException
      */
     public function foreignKeyExists($keyName, $tableName)
     {
@@ -93,6 +94,6 @@ class FtsMigration extends YiiMigration
             throw new \RuntimeException(\Yii::t('fts-migrations', 'Schema for table {tbl} not found.', ['tbl' => $tableName]));
         }
 
-        return array_key_exists('fk_user_notification_target_user', $tableSchema->foreignKeys);
+        return array_key_exists($keyName, $tableSchema->foreignKeys);
     }
 }
