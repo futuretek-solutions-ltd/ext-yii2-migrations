@@ -3,6 +3,7 @@
 namespace futuretek\migrations;
 
 use yii\db\Migration as YiiMigration;
+use yii\db\TableSchema;
 
 /**
  * Class FtsMigration
@@ -95,5 +96,16 @@ class FtsMigration extends YiiMigration
         }
 
         return array_key_exists($keyName, $tableSchema->foreignKeys);
+    }
+
+    /**
+     * Check if table exists
+     *
+     * @param string $tableName Table name
+     * @return bool
+     */
+    public function tableExists($tableName)
+    {
+        return $this->getDb()->getTableSchema($tableName) instanceof TableSchema;
     }
 }
