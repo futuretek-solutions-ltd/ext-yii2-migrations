@@ -4,6 +4,7 @@ namespace futuretek\migrations\controllers;
 
 use futuretek\migrations\Migration;
 use yii\console\controllers\MigrateController as YiiMigrateController;
+use yii\console\ExitCode;
 
 /**
  * Manages application migrations.
@@ -53,6 +54,11 @@ class MigrateController extends YiiMigrateController
     public $migration;
 
     /**
+     * @var bool Don't emit exit code (useful on CI).
+     */
+    public $noExit = false;
+
+    /**
      * @inheritdoc
      */
     public function init()
@@ -65,24 +71,28 @@ class MigrateController extends YiiMigrateController
      * Upgrades the application by applying new migrations.
      *
      * @param int $limit
-     * @return void
+     * @return int
      */
     public function actionUp($limit = 0)
     {
-        $this->migration->actionUp($limit);
+        $result = $this->migration->actionUp($limit);
         echo implode(PHP_EOL, $this->migration->getLog());
+
+        return $result || $this->noExit ? ExitCode::OK : ExitCode::UNSPECIFIED_ERROR;
     }
 
     /**
      * Downgrades the application by reverting old migrations.
      *
      * @param int $limit
-     * @return void
+     * @return int
      */
     public function actionDown($limit = 1)
     {
-        $this->migration->actionDown($limit);
+        $result = $this->migration->actionDown($limit);
         echo implode(PHP_EOL, $this->migration->getLog());
+
+        return $result || $this->noExit ? ExitCode::OK : ExitCode::UNSPECIFIED_ERROR;
     }
 
     /**
