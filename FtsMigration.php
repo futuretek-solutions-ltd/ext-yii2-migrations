@@ -52,35 +52,6 @@ class FtsMigration extends YiiMigration
     }
 
     /**
-     * Insert key into option table
-     *
-     * @param string $name Name (key) - only uppercase letters and underscore
-     * @param string $defaultValue Default value
-     * @param string $title Title
-     * @param string $description Description
-     * @param string $type Type - allowed only Option::TYPE_xxx constants
-     * @param int $system Is system option (invisible to users)
-     * @param string $unit Unit of measurement
-     */
-    public function insertOption($name, $defaultValue, $title, $description, $type, $system = 0, $unit = null)
-    {
-        $this->insert('option', [
-            'name' => $name,
-            'value' => $defaultValue,
-            'title' => $title,
-            'description' => $description,
-            'default_value' => $defaultValue,
-            'unit' => $unit,
-            'system' => (int)$system,
-            'type' => $type,
-            'context' => 'Option',
-            'context_id' => null,
-            'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
-            'updated_at' => (new \DateTime())->format('Y-m-d H:i:s'),
-        ]);
-    }
-
-    /**
      * Check if foreign key exists in specified table
      *
      * @param string $keyName FK name
@@ -107,5 +78,27 @@ class FtsMigration extends YiiMigration
     public function tableExists($tableName)
     {
         return $this->getDb()->getTableSchema($tableName) instanceof TableSchema;
+    }
+
+    /**
+     * Disable integrity check
+     *
+     * @throws \yii\base\NotSupportedException
+     * @throws \yii\db\Exception
+     */
+    public function disableIntegrityCheck()
+    {
+        $this->db->createCommand()->checkIntegrity(false)->execute();
+    }
+
+    /**
+     * Enable integrity check
+     *
+     * @throws \yii\base\NotSupportedException
+     * @throws \yii\db\Exception
+     */
+    public function enableIntegrityCheck()
+    {
+        $this->db->createCommand()->checkIntegrity()->execute();
     }
 }
