@@ -3,6 +3,7 @@
 namespace futuretek\migrations;
 
 use yii\db\Migration as YiiMigration;
+use yii\db\Query;
 use yii\db\TableSchema;
 
 /**
@@ -100,5 +101,18 @@ class FtsMigration extends YiiMigration
     public function enableIntegrityCheck()
     {
         $this->db->createCommand()->checkIntegrity()->execute();
+    }
+
+    /**
+     * Get last (maximal) inserted ID in specified table
+     *
+     * @param string $table Table name
+     * @return mixed
+     */
+    public function getLastInsertID($table)
+    {
+        return (new Query())
+            ->from($table)
+            ->max($this->db->schema->getTableSchema($table, true)->primaryKey);
     }
 }
