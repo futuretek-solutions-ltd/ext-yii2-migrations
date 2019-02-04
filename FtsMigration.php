@@ -111,8 +111,10 @@ class FtsMigration extends YiiMigration
      */
     public function getLastInsertID($table)
     {
+        $primaryKey = $this->db->schema->getTableSchema($table, true)->primaryKey;
+
         return (new Query())
             ->from($table)
-            ->max($this->db->schema->getTableSchema($table, true)->primaryKey);
+            ->max(reset($primaryKey));
     }
 }
