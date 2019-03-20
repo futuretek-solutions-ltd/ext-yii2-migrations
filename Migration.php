@@ -127,6 +127,12 @@ class Migration
     {
         if (Yii::$app->db->schema->getTableSchema($this->migrationTable, true) === null) {
             $this->createMigrationHistoryTable();
+        } elseif (Yii::$app->db->schema->getTableSchema($this->migrationTable, true)->getColumn('path') === null) {
+            Yii::$app->db->createCommand()->addColumn(
+                $this->migrationTable,
+                'path',
+                'varchar(255) NOT NULL DEFAULT "' . Yii::$app->basePath . '"'
+            )->execute();
         } elseif (Yii::$app->db->schema->getTableSchema($this->migrationTable, true)->getColumn('app_version') === null) {
             Yii::$app->db->createCommand()->addColumn(
                 $this->migrationTable,
