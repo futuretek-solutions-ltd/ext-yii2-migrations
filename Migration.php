@@ -127,24 +127,28 @@ class Migration
     {
         if (Yii::$app->db->schema->getTableSchema($this->migrationTable, true) === null) {
             $this->createMigrationHistoryTable();
-        } elseif (Yii::$app->db->schema->getTableSchema($this->migrationTable, true)->getColumn('path') === null) {
-            Yii::$app->db->createCommand()->addColumn(
-                $this->migrationTable,
-                'path',
-                'varchar(255) NOT NULL DEFAULT "' . Yii::$app->basePath . '"'
-            )->execute();
-        } elseif (Yii::$app->db->schema->getTableSchema($this->migrationTable, true)->getColumn('app_version') === null) {
-            Yii::$app->db->createCommand()->addColumn(
-                $this->migrationTable,
-                'app_version',
-                'varchar(16) NULL'
-            )->execute();
-        } elseif (Yii::$app->db->schema->getTableSchema($this->migrationTable, true)->getColumn('module') === null) {
-            Yii::$app->db->createCommand()->addColumn(
-                $this->migrationTable,
-                'module',
-                'varchar(32) NULL'
-            )->execute();
+        } else {
+            if (Yii::$app->db->schema->getTableSchema($this->migrationTable, true)->getColumn('path') === null) {
+                Yii::$app->db->createCommand()->addColumn(
+                    $this->migrationTable,
+                    'path',
+                    'varchar(255) NOT NULL DEFAULT "' . Yii::$app->basePath . '"'
+                )->execute();
+            }
+            if (Yii::$app->db->schema->getTableSchema($this->migrationTable, true)->getColumn('app_version') === null) {
+                Yii::$app->db->createCommand()->addColumn(
+                    $this->migrationTable,
+                    'app_version',
+                    'varchar(16) NULL'
+                )->execute();
+            }
+            if (Yii::$app->db->schema->getTableSchema($this->migrationTable, true)->getColumn('module') === null) {
+                Yii::$app->db->createCommand()->addColumn(
+                    $this->migrationTable,
+                    'module',
+                    'varchar(32) NULL'
+                )->execute();
+            }
         }
         $query = new Query;
         $rows = $query->select(['version', 'path', 'apply_time', 'app_version', 'module'])
