@@ -2,6 +2,7 @@
 
 namespace futuretek\migrations;
 
+use yii\base\InvalidArgumentException;
 use yii\db\Migration as YiiMigration;
 use yii\db\Query;
 use yii\db\TableSchema;
@@ -116,5 +117,39 @@ class FtsMigration extends YiiMigration
         return (new Query())
             ->from($table)
             ->max(reset($primaryKey));
+    }
+
+    /**
+     * Set collation on column.
+     * Usage:
+     * ```
+     * $this->string(128)->notNull()->append($this->collation('utf8_czech_ci'))
+     * ```
+     *
+     * @param string $collation Collation to set
+     * @return string
+     */
+    public function collation($collation = 'utf8_general_ci')
+    {
+        switch ($this->getDb()->getDriverName()) {
+            case 'mysql':
+                return "COLLATE {$collation}";
+            case 'pgsql':
+                return "COLLATE \"{$collation}\"";
+            case 'sqlite':
+                if (false !== stripos($collation, 'bin')) {
+                    return 'COLLATE BINARY';
+                }
+                if (false !== stripos($collation, '_ci')) {
+                    return 'COLLATE NOCASE';
+                }
+
+                return '';
+            case 'sqlsrv':
+            case 'dblib':
+                return "COLLATE {$collation}";
+            default:
+                throw new InvalidArgumentException('Unsupported database driver.');
+        }
     }
 }
