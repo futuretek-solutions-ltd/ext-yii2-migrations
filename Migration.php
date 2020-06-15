@@ -149,6 +149,16 @@ class Migration
                     'varchar(32) NULL'
                 )->execute();
             }
+            if (
+                Yii::$app->db->schema->getTableSchema($this->migrationTable, true)->getColumn('app_version') &&
+                Yii::$app->db->schema->getTableSchema($this->migrationTable, true)->getColumn('app_version')->size < 128
+            ) {
+                Yii::$app->db->createCommand()->alterColumn(
+                    $this->migrationTable,
+                    'app_version',
+                    'varchar(128) NULL'
+                )->execute();
+            }
         }
         $query = new Query;
         $rows = $query->select(['version', 'path', 'apply_time', 'app_version', 'module'])
