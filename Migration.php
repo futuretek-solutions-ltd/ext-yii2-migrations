@@ -249,6 +249,11 @@ class Migration
         $file = $path . DIRECTORY_SEPARATOR . $class . '.php';
         require_once $file;
 
+        //Try to detect namespace
+        if (!class_exists($class) && preg_match('/namespace ([\w_\\\\]*);/', file_get_contents($file), $matches)) {
+            $class = $matches[1] . '\\' . $class;
+        }
+
         return new $class(['db' => Yii::$app->db]);
     }
 
