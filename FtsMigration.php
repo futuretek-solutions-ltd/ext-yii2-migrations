@@ -176,4 +176,46 @@ class FtsMigration extends YiiMigration
                 throw new NotSupportedException("Driver {$this->db->driverName} not supported.");
         }
     }
+
+    /**
+     * Return index name compatible with all PDO DBMS.
+     * Index name length limitations:
+     * * Oracle - 30 chars
+     * * PgSQL - 63 chars
+     * * MySQL - 64 chars
+     * * SQL Server - 128 chars
+     *
+     * In case of Oracle all index names will be hashed to prevent duplicities
+     *
+     * @param string $name Index name
+     * @param string $prefix Index prefix
+     * @param string $suffix Index suffix
+     *
+     * @return string
+     */
+    public function getIndexName($name, $prefix = 'idx', $suffix = '')
+    {
+        switch ($this->db->driverName) {
+            case 'sqlsrv':
+                $maxLength = 128;
+                break;
+            case 'pgsql':
+                $maxLength = 63;
+                break;
+            case 'mysql':
+                $maxLength = 64;
+                break;
+            case 'oci':
+                $maxLength = 30;
+                $name = md5($name);
+                break;
+            default:
+                throw new NotSupportedException("Driver {$this->db->driverName} not supported.");
+        }
+
+        $prefixLen = strlen($prefix);
+        $suffixLen = strlen($suffix);
+
+        return $prefix . substr($name, 0, $maxLength - ($prefixLen + $suffixLen)) . $suffix;
+    }
 }
