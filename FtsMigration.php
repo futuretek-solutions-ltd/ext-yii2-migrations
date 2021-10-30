@@ -213,6 +213,9 @@ class FtsMigration extends YiiMigration
                 throw new NotSupportedException("Driver {$this->db->driverName} not supported.");
         }
 
+        $prefix = rtrim($prefix, '_') . '_';
+        $suffix = '_' . ltrim($suffix, '_');
+
         $prefixLen = strlen($prefix);
         $suffixLen = strlen($suffix);
 
