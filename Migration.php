@@ -159,12 +159,13 @@ class Migration
             $this->migrationTable,
             [
                 'version' => (new ColumnSchemaBuilder(Schema::TYPE_STRING, 180))->notNull(),
-                'path' => (new ColumnSchemaBuilder(Schema::TYPE_STRING, 255))->notNull()->defaultValue(Yii::$app->basePath),
+                'path' => (new ColumnSchemaBuilder(Schema::TYPE_STRING, 255)),
                 'apply_time' => new ColumnSchemaBuilder(Schema::TYPE_INTEGER),
-                'app_version' => (new ColumnSchemaBuilder(Schema::TYPE_STRING, 128))->null(),
-                'module' => (new ColumnSchemaBuilder(Schema::TYPE_STRING, 32))->null(),
+                'app_version' => (new ColumnSchemaBuilder(Schema::TYPE_STRING, 128)),
+                'module' => (new ColumnSchemaBuilder(Schema::TYPE_STRING, 32)),
             ]
         )->execute();
+        Yii::$app->db->createCommand()->addPrimaryKey('migration_PRIMARY', $this->migrationTable, 'version')->execute();
         Yii::$app->db->createCommand()->insert(
             $this->migrationTable,
             [
