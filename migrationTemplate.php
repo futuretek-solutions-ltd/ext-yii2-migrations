@@ -12,7 +12,9 @@
 
 echo '<?php';?>
 
-class <?= $className ?> extends \futuretek\migrations\FtsMigration
+use \futuretek\migrations\FtsMigration;
+
+class <?= $className ?> extends FtsMigration
 {
     /**
      * @inheritdoc

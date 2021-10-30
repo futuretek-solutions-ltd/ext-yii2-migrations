@@ -2,13 +2,17 @@
 
 namespace futuretek\migrations;
 
-use yii\base\InvalidArgumentException;
+use yii\base\NotSupportedException;
+use yii\db\Connection;
+use yii\db\Expression;
 use yii\db\Migration as YiiMigration;
 use yii\db\Query;
 use yii\db\TableSchema;
 
 /**
  * Class FtsMigration
+ *
+ * @property Connection|array|string $db the DB connection object or the application component ID of the DB connection
  *
  * @package futuretek\migrations
  * @author  Lukas Cerny <lukas.cerny@futuretek.cz>
@@ -133,6 +137,8 @@ class FtsMigration extends YiiMigration
     {
         switch ($this->getDb()->getDriverName()) {
             case 'mysql':
+            case 'sqlsrv':
+            case 'dblib':
                 return "COLLATE {$collation}";
             case 'pgsql':
                 return "COLLATE \"{$collation}\"";
@@ -145,11 +151,29 @@ class FtsMigration extends YiiMigration
                 }
 
                 return '';
-            case 'sqlsrv':
-            case 'dblib':
-                return "COLLATE {$collation}";
             default:
-                throw new InvalidArgumentException('Unsupported database driver.');
+                throw new NotSupportedException("Driver {$this->db->driverName} not supported.");
+        }
+    }
+
+    /**
+     * Returns current date and time
+     *
+     * @return Expression
+     * @throws NotSupportedException
+     */
+    public function now()
+    {
+        switch ($this->db->driverName) {
+            case 'sqlsrv':
+                return new Expression('SYSDATETIME()');
+            case 'mysql':
+            case 'pgsql':
+                return new Expression('NOW()');
+            case 'oci':
+                return new Expression('CURRENT_DATE');
+            default:
+                throw new NotSupportedException("Driver {$this->db->driverName} not supported.");
         }
     }
 }

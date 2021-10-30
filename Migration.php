@@ -3,7 +3,9 @@
 namespace futuretek\migrations;
 
 use Yii;
+use yii\db\ColumnSchemaBuilder;
 use yii\db\Query;
+use yii\db\Schema;
 
 /**
  * Class Migration
@@ -127,38 +129,6 @@ class Migration
     {
         if (Yii::$app->db->schema->getTableSchema($this->migrationTable, true) === null) {
             $this->createMigrationHistoryTable();
-        } else {
-            if (Yii::$app->db->schema->getTableSchema($this->migrationTable, true)->getColumn('path') === null) {
-                Yii::$app->db->createCommand()->addColumn(
-                    $this->migrationTable,
-                    'path',
-                    'varchar(255) NOT NULL DEFAULT "' . Yii::$app->basePath . '"'
-                )->execute();
-            }
-            if (Yii::$app->db->schema->getTableSchema($this->migrationTable, true)->getColumn('app_version') === null) {
-                Yii::$app->db->createCommand()->addColumn(
-                    $this->migrationTable,
-                    'app_version',
-                    'varchar(16) NULL'
-                )->execute();
-            }
-            if (Yii::$app->db->schema->getTableSchema($this->migrationTable, true)->getColumn('module') === null) {
-                Yii::$app->db->createCommand()->addColumn(
-                    $this->migrationTable,
-                    'module',
-                    'varchar(32) NULL'
-                )->execute();
-            }
-            if (
-                Yii::$app->db->schema->getTableSchema($this->migrationTable, true)->getColumn('app_version') &&
-                Yii::$app->db->schema->getTableSchema($this->migrationTable, true)->getColumn('app_version')->size < 128
-            ) {
-                Yii::$app->db->createCommand()->alterColumn(
-                    $this->migrationTable,
-                    'app_version',
-                    'varchar(128) NULL'
-                )->execute();
-            }
         }
         $query = new Query;
         $rows = $query->select(['version', 'path', 'apply_time', 'app_version', 'module'])
@@ -188,11 +158,11 @@ class Migration
         Yii::$app->db->createCommand()->createTable(
             $this->migrationTable,
             [
-                'version' => 'varchar(180) NOT NULL PRIMARY KEY',
-                'path' => 'varchar(255) NOT NULL',
-                'apply_time' => 'integer',
-                'app_version' => 'varchar(16) NULL',
-                'module' => 'varchar(32) NULL',
+                'version' => (new ColumnSchemaBuilder(Schema::TYPE_STRING, 180))->notNull(),
+                'path' => (new ColumnSchemaBuilder(Schema::TYPE_STRING, 255))->notNull()->defaultValue(Yii::$app->basePath),
+                'apply_time' => new ColumnSchemaBuilder(Schema::TYPE_INTEGER),
+                'app_version' => (new ColumnSchemaBuilder(Schema::TYPE_STRING, 128))->null(),
+                'module' => (new ColumnSchemaBuilder(Schema::TYPE_STRING, 32))->null(),
             ]
         )->execute();
         Yii::$app->db->createCommand()->insert(
@@ -288,13 +258,13 @@ class Migration
             $this->_lastStatus = $module === null ? Yii::t('fts-migrations', 'Migration {name} successfully applied.', ['name' => $class]) : Yii::t('fts-migrations', 'Migration {name} for module {module} successfully applied.', ['name' => $class, 'module' => $module]);
 
             return true;
-        } else {
-            $time = microtime(true) - $start;
-            $this->_log[] = "*** failed to apply $class (time: " . sprintf('%.3f', $time) . 's)';
-            $this->_lastStatus = $module === null ? Yii::t('fts-migrations', 'Failed to apply migration {name}.', ['name' => $class]) : Yii::t('fts-migrations', 'Failed to apply migration {name} for module {module}.', ['name' => $class, 'module' => $module]);
-
-            return false;
         }
+
+        $time = microtime(true) - $start;
+        $this->_log[] = "*** failed to apply $class (time: " . sprintf('%.3f', $time) . 's)';
+        $this->_lastStatus = $module === null ? Yii::t('fts-migrations', 'Failed to apply migration {name}.', ['name' => $class]) : Yii::t('fts-migrations', 'Failed to apply migration {name} for module {module}.', ['name' => $class, 'module' => $module]);
+
+        return false;
     }
 
     /**
@@ -322,13 +292,13 @@ class Migration
             $this->_lastStatus = $module === null ? Yii::t('fts-migrations', 'Migration {name} successfully reverted.', ['name' => $class]) : Yii::t('fts-migrations', 'Migration {name} for module {module} successfully reverted.', ['name' => $class, 'module' => $module]);
 
             return true;
-        } else {
-            $time = microtime(true) - $start;
-            $this->_log[] = "*** failed to revert $class (time: " . sprintf('%.3f', $time) . 's)';
-            $this->_lastStatus = $module === null ? Yii::t('fts-migrations', 'Failed to revert migration {name}.', ['name' => $class]) : Yii::t('fts-migrations', 'Failed to revert migration {name} for module {module}.', ['name' => $class, 'module' => $module]);
-
-            return false;
         }
+
+        $time = microtime(true) - $start;
+        $this->_log[] = "*** failed to revert $class (time: " . sprintf('%.3f', $time) . 's)';
+        $this->_lastStatus = $module === null ? Yii::t('fts-migrations', 'Failed to revert migration {name}.', ['name' => $class]) : Yii::t('fts-migrations', 'Failed to revert migration {name} for module {module}.', ['name' => $class, 'module' => $module]);
+
+        return false;
     }
 
     /**
