@@ -19,7 +19,7 @@ class Migration
 {
     const BASE_MIGRATION = 'm000000_000000_base';
 
-    public $migrationTable = '{{%migration}}';
+    public $migrationTable = 'migration';
 
     private $_log = [];
     private $_lastStatus = '';

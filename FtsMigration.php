@@ -3,6 +3,7 @@
 namespace futuretek\migrations;
 
 use yii\base\NotSupportedException;
+use yii\db\ColumnSchema;
 use yii\db\Connection;
 use yii\db\Expression;
 use yii\db\Migration as YiiMigration;
@@ -87,6 +88,20 @@ class FtsMigration extends YiiMigration
     }
 
     /**
+     * Check if column exists
+     *
+     * @param string $tableName Table name
+     * @param string $columnName Column name
+     * @return bool
+     */
+    public function columnExists($tableName, $columnName)
+    {
+        $tblSchema = $this->getDb()->getTableSchema($tableName);
+
+        return $tblSchema instanceof TableSchema && $tblSchema->getColumn($columnName) instanceof ColumnSchema;
+    }
+
+    /**
      * Disable integrity check
      *
      * @throws \yii\base\NotSupportedException
@@ -157,7 +172,7 @@ class FtsMigration extends YiiMigration
     }
 
     /**
-     * Returns current date and time
+     * Returns current date and time SQL expression
      *
      * @return Expression
      * @throws NotSupportedException
