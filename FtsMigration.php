@@ -222,7 +222,11 @@ class FtsMigration extends YiiMigration
                 break;
             case 'oci':
                 $maxLength = 30;
-                $name = md5($name);
+                $name = md5($prefix . $name . $suffix);
+                if (empty($prefix) && preg_match('/^\d/', $name)) {
+                    //Constraint name cannot start with number
+                    $name = 'a' . $name;
+                }
                 break;
             default:
                 throw new NotSupportedException("Driver {$this->db->driverName} not supported.");
