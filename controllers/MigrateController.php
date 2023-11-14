@@ -151,4 +151,22 @@ class MigrateController extends YiiMigrateController
     {
         echo var_export($this->migration->getNewMigrations(), true);
     }
+
+    private $_migrationNameLimit;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getMigrationNameLimit()
+    {
+        if ($this->_migrationNameLimit !== null) {
+            return $this->_migrationNameLimit;
+        }
+        $tableSchema = $this->db->schema ? $this->db->schema->getTableSchema($this->migrationTable, true) : null;
+        if ($tableSchema !== null) {
+            return $this->_migrationNameLimit = $tableSchema->columns['version']->size;
+        }
+
+        return static::MAX_NAME_LENGTH;
+    }
 }
