@@ -98,7 +98,11 @@ class FtsMigration extends YiiMigration
     {
         $tblSchema = $this->getDb()->getTableSchema($tableName);
 
-        return $tblSchema instanceof TableSchema && $tblSchema->getColumn($columnName) instanceof ColumnSchema;
+        if (!($tblSchema instanceof TableSchema)) {
+            return false;
+        }
+
+        return $tblSchema->getColumn($columnName) instanceof ColumnSchema || $tblSchema->getColumn(strtoupper($columnName)) instanceof ColumnSchema;
     }
 
     /**
