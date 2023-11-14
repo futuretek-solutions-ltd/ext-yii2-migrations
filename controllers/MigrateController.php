@@ -164,7 +164,7 @@ class MigrateController extends YiiMigrateController
         }
         $tableSchema = $this->db->schema ? $this->db->schema->getTableSchema($this->migrationTable, true) : null;
         if ($tableSchema !== null) {
-            return $this->_migrationNameLimit = $tableSchema->columns['version']->size;
+            return $this->_migrationNameLimit = $tableSchema->columns[$this->db->driverName === 'oci' ? 'VERSION' : 'version']->size;
         }
 
         return static::MAX_NAME_LENGTH;
