@@ -2,6 +2,7 @@
 
 namespace futuretek\migrations;
 
+use yii\base\InvalidArgumentException;
 use yii\base\NotSupportedException;
 use yii\db\ColumnSchema;
 use yii\db\Connection;
@@ -131,15 +132,22 @@ class FtsMigration extends YiiMigration
      * Get last (maximal) inserted ID in specified table
      *
      * @param string $table Table name
+     * @param string|null $column Column name or null for autodetect. For compound primary keys the first column is returned.
      * @return mixed
      */
-    public function getLastInsertID($table)
+    public function getLastInsertID($table, $column = null)
     {
-        $primaryKey = $this->db->schema->getTableSchema($table, true)->primaryKey;
+        if ($column === null) {
+            $primaryKey = $this->db->schema->getTableSchema($table, true)->primaryKey;
+            if (empty($primaryKey)) {
+                throw new InvalidArgumentException('Table has no primary key');
+            }
+            $column = reset($primaryKey);
+        }
 
         return (new Query())
             ->from($table)
-            ->max(reset($primaryKey));
+            ->max($column);
     }
 
     /**
